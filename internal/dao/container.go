@@ -47,11 +47,14 @@ func (c *Container) List(ctx context.Context, _ string) ([]runtime.Object, error
 		return nil, err
 	}
 	res := make([]runtime.Object, 0, len(po.Spec.InitContainers)+len(po.Spec.Containers))
+	var declaredOrder int
 	for _, co := range po.Spec.InitContainers {
-		res = append(res, makeContainerRes(co, po, cmx[co.Name], true))
+		res = append(res, makeContainerRes(co, po, cmx[co.Name], true, declaredOrder))
+		declaredOrder++
 	}
 	for _, co := range po.Spec.Containers {
-		res = append(res, makeContainerRes(co, po, cmx[co.Name], false))
+		res = append(res, makeContainerRes(co, po, cmx[co.Name], false, declaredOrder))
+		declaredOrder++
 	}
 
 	return res, nil
@@ -68,13 +71,14 @@ func (c *Container) TailLogs(ctx context.Context, opts *LogOptions) ([]LogChan, 
 // ----------------------------------------------------------------------------
 // Helpers...
 
-func makeContainerRes(co v1.Container, po *v1.Pod, cmx *mv1beta1.ContainerMetrics, isInit bool) render.ContainerRes {
+func makeContainerRes(co v1.Container, po *v1.Pod, cmx *mv1beta1.ContainerMetrics, isInit bool, delaredOrder int) render.ContainerRes {
 	return render.ContainerRes{
-		Container: &co,
-		Status:    getContainerStatus(co.Name, po.Status),
-		MX:        cmx,
-		IsInit:    isInit,
-		Age:       po.GetCreationTimestamp(),
+		Container:     &co,
+		Status:        getContainerStatus(co.Name, po.Status),
+		MX:            cmx,
+		IsInit:        isInit,
+		Age:           po.GetCreationTimestamp(),
+		DeclaredOrder: delaredOrder,
 	}
 }
 

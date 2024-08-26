@@ -79,6 +79,7 @@ func (Container) Header(ns string) model1.Header {
 		model1.HeaderColumn{Name: "STATE"},
 		model1.HeaderColumn{Name: "INIT"},
 		model1.HeaderColumn{Name: "RESTARTS", Align: tview.AlignRight},
+		model1.HeaderColumn{Name: "DECLARED", Align: tview.AlignRight},
 		model1.HeaderColumn{Name: "PROBES(L:R)"},
 		model1.HeaderColumn{Name: "CPU", Align: tview.AlignRight, MX: true},
 		model1.HeaderColumn{Name: "MEM", Align: tview.AlignRight, MX: true},
@@ -116,6 +117,7 @@ func (c Container) Render(o interface{}, name string, r *model1.Row) error {
 		state,
 		boolToStr(co.IsInit),
 		restarts,
+		strconv.Itoa(co.DeclaredOrder),
 		probe(co.Container.LivenessProbe) + ":" + probe(co.Container.ReadinessProbe),
 		toMc(cur.cpu),
 		toMi(cur.mem),
@@ -238,11 +240,12 @@ func probe(p *v1.Probe) string {
 
 // ContainerRes represents a container and its metrics.
 type ContainerRes struct {
-	Container *v1.Container
-	Status    *v1.ContainerStatus
-	MX        *mv1beta1.ContainerMetrics
-	IsInit    bool
-	Age       metav1.Time
+	Container     *v1.Container
+	Status        *v1.ContainerStatus
+	MX            *mv1beta1.ContainerMetrics
+	IsInit        bool
+	Age           metav1.Time
+	DeclaredOrder int
 }
 
 // GetObjectKind returns a schema object.

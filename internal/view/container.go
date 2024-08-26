@@ -90,6 +90,7 @@ func (c *Container) bindKeys(aa *ui.KeyActions) {
 		ui.KeyF:      ui.NewKeyAction("Show PortForward", c.showPFCmd, true),
 		ui.KeyShiftF: ui.NewKeyAction("PortForward", c.portFwdCmd, true),
 		ui.KeyShiftT: ui.NewKeyAction("Sort Restart", c.GetTable().SortColCmd("RESTARTS", false), false),
+		ui.KeyShiftD: ui.NewKeyAction("Sort Declared", c.GetTable().SortColCmd("DECLARED", true), true),
 	})
 	aa.Merge(resourceSorters(c.GetTable()))
 }
